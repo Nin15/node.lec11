@@ -9,21 +9,22 @@ require("dotenv").config();
 const authRouter = Router();
 
 authRouter.post("/sign-up", async (req, res) => {
-  const { error } = userSchema.validate(req.body || {});
-  if (error) {
-    return res.status(400).json(error);
+  try {
+    const { error } = userSchema.validate(req.body || {});
+    if (error) return res.status(400).json(error);
+
+    const { fullName, email, password } = req.body;
+    const existUser = await userModel.findOne({ email });
+    if (existUser) return res.status(400).json({ message: "user already exist" });
+
+    const hashedPass = await bcrypt.hash(password, 10);
+    await userModel.create({ fullName, password: hashedPass, email });
+
+    res.status(201).json({ message: "user registered successfully" });
+  } catch (err) {
+    console.error("SIGN-UP ERROR:", err);
+    res.status(500).json({ message: "Internal server error" });
   }
-
-  const { fullName, email, password } = req.body;
-
-  const existUser = await userModel.findOne({ email });
-  if (existUser) {
-    return res.status(400).json({ message: "user already exist" });
-  }
-
-  const hashedPass = await bcrypt.hash(password, 10);
-  await userModel.create({ fullName, password: hashedPass, email });
-  res.status(201).json({ message: "user registged successfully" });
 });
 
 authRouter.post("/sign-in", async (req, res) => {
