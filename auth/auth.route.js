@@ -1,9 +1,9 @@
 const { Router } = require("express");
-const userSchema = require("./validations/user.validation");
-const userModel = require("./models/user.model");
+const userSchema = require("../validation/user.validation");
+const userModel = require("../models/user.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const isAuth = require("../middlewares/isAuth.middleware");
+const isAuth = require("../middleware/isAuth.middleware");
 require("dotenv").config();
 
 const authRouter = Router();
