@@ -8,7 +8,7 @@ require("dotenv").config();
 
 const authRouter = Router();
 
-authRouter.post('/sign-up', async (req, res) => {
+authRouter.post("/sign-up", async (req, res) => {
   const { error } = userSchema.validate(req.body || {});
   if (error) {
     return res.status(400).json(error);
@@ -18,41 +18,43 @@ authRouter.post('/sign-up', async (req, res) => {
 
   const existUser = await userModel.findOne({ email });
   if (existUser) {
-    return res.status(400).json({ message: 'user already exist' });
+    return res.status(400).json({ message: "user already exist" });
   }
 
   const hashedPass = await bcrypt.hash(password, 10);
-  //illegal to write password instead of the HASHEDPASS
   await userModel.create({ fullName, password: hashedPass, email });
   res.status(201).json({ message: "user registged successfully" });
 });
 
-authRouter.post('/sign-in', async (req, res) => {
+authRouter.post("/sign-in", async (req, res) => {
+  console.log("BODY:", req.body);
   const { email, password } = req.body;
   if (!email || !password) {
-    return res.status(400).json({ message: 'email and password is required' });
+    return res.status(400).json({ message: "email and password is required" });
   }
 
-  const existUser = await userModel.findOne({ email }).select('password');
+  const existUser = await userModel.findOne({ email }).select("password");
   if (!existUser) {
-    return res.status(400).json({ message: 'email or password is invalid' });
+    return res.status(400).json({ message: "email or password is invalid" });
   }
 
   const isPassEqual = await bcrypt.compare(password, existUser.password);
   if (!isPassEqual) {
-    return res.status(400).json({ message: 'email or password is invalid' });
+    return res.status(400).json({ message: "email or password is invalid" });
   }
 
   const payload = {
-    userId: existUser._id
+    userId: existUser._id,
   };
 
-  const token = await jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+  const token = await jwt.sign(payload, process.env.JWT_SECRET, {
+    expiresIn: "1h",
+  });
 
   res.json(token);
 });
 
-authRouter.get('/current-user', isAuth, async (req, res) => {
+authRouter.get("/current-user", isAuth, async (req, res) => {
   const user = await userModel.findById(req.userId);
   res.json(user);
 });
