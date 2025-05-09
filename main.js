@@ -13,7 +13,7 @@ app.get("/", (req, res) => {
   res.send("hello world");
 });
 app.use(cors())
-app.use("posts", isAuth, postRouter);
+app.use("/posts", isAuth, postRouter);
 app.use("/auth", isAuth, authRouter);
 app.use("/users", userRouter);
 
