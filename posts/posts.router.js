@@ -37,4 +37,18 @@ postRouter.delete("/:id", async (req, res) => {
   return res.status(200).json({message: "Post deleted successfully!"})
 });
 
+postRouter.put("/:id", async (req, res) => {
+  const { id } = req.params;
+  if (!isValidObjectId) {
+    return res.status(400).json({ message: "id is invalid" });
+  }
+
+  const post = await postModel.findById(id)
+  if (post.author.toString() !== req.userId){
+    return res.status(401).json({message: "You don't have permission!"})
+  }
+
+  await postModel.findByIdAndUpdate(id)
+  return res.status(200).json({message: "Post Updated successfully!"})
+});
 module.exports = postRouter;
