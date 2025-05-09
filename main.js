@@ -19,7 +19,7 @@ app.use(
   })
 );
 app.use("/posts", isAuth, postRouter);
-app.use("/auth", isAuth, authRouter);
+app.use("/auth", authRouter);
 app.use("/users", userRouter);
 
 app.listen(3000, () => {
