@@ -27,3 +27,5 @@ app.use("/users", userRouter);
 // app.listen(3000, () => {
 //   console.log("server running on http://localhost:3000");
 // });
+const serverless = require("serverless-http");
+module.exports.handler = serverless(app);
